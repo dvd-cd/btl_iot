@@ -1,5 +1,7 @@
+import mqttClient from "../config/mqtt.js";
 import Device from "../models/Device.js";
 import FaceBiometric from "../models/FaceBiometric.js";
+import AccessLog from '../models/AccessLog.js'
 // import mongoose from "mongoose";
 import { generateDeviceId, generateDeviceToken } from '../services/DeviceService.js'
 
@@ -226,6 +228,10 @@ const deleteDevice = async (req, res) => {
             });
         }
 
+        await FaceBiometric.deleteMany({
+            deviceId: deviceId
+        });
+
         return res.status(200).json({
             success: true,
             data: {
@@ -242,10 +248,110 @@ const deleteDevice = async (req, res) => {
     }
 }
 
+/**
+ * open/close door
+ * POST /api/devices/:deviceId/commands
+ */
+const doorAction = async (req, res) => {
+    try {
+        const { deviceId } = req.params;
+        const { id } = req.user;
+
+        const device = await Device.findOne({
+            deviceId: deviceId,
+            owner: id
+        });
+
+        if (!device) return res.status(404).json({
+            success: false,
+            message: "Device not found"
+        });
+
+        const message = req.body;
+        message["token"] = device.deviceToken;
+        // console.log(message)
+
+        mqttClient.publish(`smartlock/${device.deviceId}/command`, JSON.stringify(message), { qos: 0 },
+            async (error) => {
+                if (error) {
+                    console.log(`[deviceController.js] doorAction() publish error: ${error.message}`);
+                    return res.status(500).json({
+                        success: false,
+                        message: "MQTT Broker error"
+                    });
+                }
+
+                const accessLog = new AccessLog({
+                    deviceId: deviceId,
+                    timestamp: Date.now(),
+                    actionType: "REMOTE_UNLOCK",
+                    status: "SUCCESS",
+                    detectedFace: null,
+                    snapshotURL: null,
+                });
+
+                await accessLog.save()
+
+                return res.status(200).json({
+                    success: true
+                });
+            }
+        )
+    } catch (error) {
+        console.log(`[deviceController.js] doorAction() error: ${error.message}`);
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+
+}
+
+/**
+ * get access log
+ * GET /api/devices/:deviceId/access-logs
+ */
+const getAccessLogs = async (req, res) => {
+    try {
+        const { deviceId } = req.params;
+        const { id } = req.user;
+
+        const device = await Device.findOne({
+            deviceId: deviceId,
+            owner: id
+        });
+
+        if (!device) return res.status(404).json({
+            success: false,
+            message: "device not found"
+        });
+
+        const logs = await AccessLog.find({
+            deviceId: deviceId
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                logs: logs
+            }
+        })
+
+    } catch (error) {
+        console.log(`[deviceController.js] doorAction() error: ${error.message}`);
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
 export {
     getAllDevices,
     getDevice,
     addDevice,
     deleteDevice,
-    updateDevice
+    updateDevice,
+    doorAction,
+    getAccessLogs
 }

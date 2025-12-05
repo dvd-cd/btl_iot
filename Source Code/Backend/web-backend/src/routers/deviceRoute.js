@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { addDevice, deleteDevice, getAllDevices, getDevice, updateDevice } from '../controllers/deviceController.js';
-import { addFace } from '../controllers/FaceBiometricController.js';
+import { addDevice, deleteDevice, doorAction, getAccessLogs, getAllDevices, getDevice, updateDevice } from '../controllers/deviceController.js';
+import { addFace, deleteFace } from '../controllers/FaceBiometricController.js';
 import { requireUser } from '../middlewares/auth.js'
 import uploadCloud from '../middlewares/upload.js';
 
@@ -20,9 +20,12 @@ router.delete('/:deviceId', deleteDevice);
 
 // biometrics
 router.post('/:deviceId/faces/new', uploadCloud.array('images'), addFace);
-// router.delete('/:deviceId/faces/:faceId');
+router.delete('/:deviceId/faces/:faceId', deleteFace);
+
+// click open/close door
+router.post('/:deviceId/commands', doorAction);
 
 // logs
-// router.get('/:deviceId/access-log')
+router.get('/:deviceId/access-logs', getAccessLogs);
 
 export default router;
