@@ -48,7 +48,6 @@ const InnerLayout = () => {
         <nav>
           <Link to="/user/profile">Thông tin cá nhân</Link>
           <Link to="/user/devices">Khóa của tôi</Link>
-          <Link to="/user/notifications">Thông báo</Link>
           <button
             type="button"
             className="btn-logout"

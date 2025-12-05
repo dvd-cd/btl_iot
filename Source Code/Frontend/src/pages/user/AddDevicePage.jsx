@@ -24,8 +24,7 @@ const AddDevicePage = () => {
     try {
       setLoading(true);
       await deviceApi.createDevice({
-        deviceName: deviceName.trim(),
-        mqttToken: mqttToken.trim(),
+        deviceName: deviceName.trim()
       });
       navigate("/user/devices");
     } catch (err) {

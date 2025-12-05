@@ -15,11 +15,13 @@ const LoginPage = () => {
       const res = await authApi.login(username, password);
       console.log("Login response:", res);
       const { accessToken, refreshToken, user } = res.data.data || {};
-      const role = user.role;
+      const role = (user?.role || "").toString();
+      const normalizedRole = role.toLowerCase();
       if (accessToken) localStorage.setItem("accessToken", accessToken);
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-      if (role) localStorage.setItem("role", role);
-      navigate(role === "ADMIN" ? "/admin" : "/user");
+      if (normalizedRole) localStorage.setItem("role", normalizedRole);
+      console.log("User role:", role, "-> normalized:", normalizedRole);
+      navigate(normalizedRole === "admin" ? "/admin" : "/user");
     } catch (err) {
       console.error(err);
       setError("Sai tài khoản hoặc mật khẩu");
