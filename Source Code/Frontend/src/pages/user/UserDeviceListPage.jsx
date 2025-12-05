@@ -70,7 +70,7 @@ const UserDeviceListPage = () => {
                 >
                   Xem chi tiết
                 </Link>
-                {device.status === "locked" && (
+                {device.status === "LOCKED" && device.status !== "NOT_ACTIVE" && (
                   <button
                     className="btn-unlock"
                     onClick={async () => {
@@ -87,7 +87,7 @@ const UserDeviceListPage = () => {
                     Mở khóa
                   </button>
                 )}
-                {device.status === "unlocked" && (
+                {device.status === "UNLOCKED" && device.status !== "NOT_ACTIVE" && (
                   <button
                     className="btn-lock"
                     onClick={async () => {
