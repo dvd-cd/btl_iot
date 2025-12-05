@@ -66,3 +66,11 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Ensure main content text is clearly readable (force black where appropriate) */
+.content,
+.content *,
+.page,
+.page * {
+  color: #000 !important;
+}

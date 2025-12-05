@@ -23,8 +23,9 @@ const AddDevicePage = () => {
 
     try {
       setLoading(true);
+      console.log("Creating device with name:", deviceName);
       await deviceApi.createDevice({
-        deviceName: deviceName.trim()
+        displayName: deviceName.trim()
       });
       navigate("/user/devices");
     } catch (err) {

@@ -9,7 +9,7 @@ const UserDeviceListPage = () => {
   const navigate = useNavigate();
 
   const loadDevices = () => {
-    deviceApi.getMyDevices().then((res) => setDevices(res.data));
+    deviceApi.getMyDevices().then((res) => setDevices(res.data.data.devices));
   };
 
   useEffect(loadDevices, []);
@@ -57,14 +57,14 @@ const UserDeviceListPage = () => {
         {devices.length > 0 ? (
           devices.map((device) => (
             <div key={device._id} className="table-row">
-              <div className="col-id">{device._id}</div>
-              <div className="col-name">{device.deviceName}</div>
+              <div className="col-id">{device.id}</div>
+              <div className="col-name">{device.displayName}</div>
               {/* <div className="col-status">{getStatusBadge(device.status)}</div> */}
               <div className="col-status">{device.status}</div>
-              <div className="col-version">{device.version}</div>
+              <div className="col-version">{device.currentFWVersion}</div>
               <div className="col-actions">
                 <Link
-                  to={`/user/devices/${device._id}`}
+                  to={`/user/devices/${device.deviceId}`}
                   state={{ device }}
                   className="btn-view"
                 >

@@ -14,16 +14,17 @@ const DeviceDetailPage = () => {
   useEffect(() => {
     // Always fetch device detail (includes faces) by id
     deviceApi.getDeviceDetail(deviceId).then((res) => {
-      const d = res.data || {};
+      const d = res.data.data.device || {};
       setDevice(d);
-      setForm({ deviceName: d.deviceName || "" });
-      setInitialName(d.deviceName || "");
+      setForm({ deviceName: d.displayName || "" });
+      setInitialName(d.displayName || "");
       setFaces(d.faces || []);
     }).catch((err) => {
       console.error('Failed to load device detail', err);
     });
   }, [deviceId]);
 
+  console.log("Device detail:", device);  
   const handleSave = async (e) => {
     e?.preventDefault?.();
 
@@ -88,7 +89,7 @@ const DeviceDetailPage = () => {
 
         <div className="info-row">
           <div className="info-label">Phiên bản</div>
-          <div className="info-value">{device.version || 'N/A'}</div>
+          <div className="info-value">{device.currentFWVersion || 'N/A'}</div>
         </div>
 
         <div className="info-row">
@@ -100,17 +101,44 @@ const DeviceDetailPage = () => {
           <div className="info-label">Ảnh khuôn mặt</div>
           <div className="info-value faces-list">
             {faces && faces.length > 0 ? (
+              // For each face entry, render all image URLs (some entries may contain an array)
               faces.map((f, idx) => {
-                // support both string and object shapes
-                const url = typeof f === 'string' ? f : f.url || f.faceUrl || f.image || '';
                 const name = typeof f === 'string' ? '' : f.name || f.label || '';
-                return (
-                  <a key={idx} href={url} target="_blank" rel="noreferrer">
-                    <img src={url} alt={`face-${idx}`} className="face-thumb" />
-                    {/* keep name available in DOM but hidden */}
-                    <div className="face-name-hidden" hidden>{name}</div>
+
+                // helper to normalize to array of urls
+                const extractUrls = (face) => {
+                  if (!face) return [];
+                  if (typeof face === 'string') return [face];
+                  // common fields that may hold one or more urls
+                  if (Array.isArray(face.imageURL) && face.imageURL.length > 0) return face.imageURL;
+                  if (Array.isArray(face.faceUrl) && face.faceUrl.length > 0) return face.faceUrl;
+                  if (Array.isArray(face.image) && face.image.length > 0) return face.image;
+                  // fallback to single string fields
+                  if (typeof face.imageURL === 'string' && face.imageURL) return [face.imageURL];
+                  if (typeof face.faceUrl === 'string' && face.faceUrl) return [face.faceUrl];
+                  if (typeof face.image === 'string' && face.image) return [face.image];
+                  if (typeof face.url === 'string' && face.url) return [face.url];
+                  return [];
+                };
+
+                const urls = extractUrls(f);
+
+                if (!urls || urls.length === 0) {
+                  return (
+                    <div key={idx} className="no-face-urls">
+                      <span className="muted">Không có ảnh cho mục này</span>
+                      <div className="face-name-hidden">{name}</div>
+                    </div>
+                  );
+                }
+
+                return urls.map((url, i) => (
+                  <a key={`${idx}-${i}`} href={url} target="_blank" rel="noreferrer">
+                    <img src={url} alt={`face-${idx}-${i}`} className="face-thumb" />
+                    {/* keep name available in DOM but hidden (only on first image of the face) */}
+                    {i === 0 && <div className="face-name-hidden">{name}</div>}
                   </a>
-                );
+                ));
               })
             ) : (
               <span className="muted">Chưa có ảnh khuôn mặt</span>

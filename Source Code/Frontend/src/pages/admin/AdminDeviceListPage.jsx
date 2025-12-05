@@ -9,12 +9,17 @@ const AdminDeviceListPage = () => {
   const [confirm, setConfirm] = useState({ isOpen: false, deviceId: null, deviceName: "" });
 
   const load = () => {
-    deviceApi.getAllDevices().then((res) => setDevices(res.data));
+    deviceApi.getAllDevices().then((res) => setDevices(res.data.data.devices));
+    
   };
+
+
 
   useEffect(() => {
     load();
   }, []);
+
+  console.log("Loaded devices:", devices);
 
   const handleUpdateVersion = async (device) => {
     const newVersion = window.prompt("Nhập phiên bản mới:", device.version || "");
@@ -65,9 +70,9 @@ const AdminDeviceListPage = () => {
           <tbody>
             {devices.map((d) => (
               <tr key={d._id}>
-                <td>{d.deviceName}</td>
-                <td>{d.owner?.username || "-"}</td>
-                <td>{d.version || "-"}</td>
+                <td>{d.displayName}</td>
+                <td>{d.owner?.fullname || "-"}</td>
+                <td>{d.currentFWVersion || "-"}</td>
                 <td>
                   <div className="table-actions">
                     <button className="btn-update" onClick={() => handleUpdateVersion(d)}>Cập nhật phiên bản</button>

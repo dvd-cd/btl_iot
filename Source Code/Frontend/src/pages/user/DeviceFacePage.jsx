@@ -77,20 +77,47 @@ const DeviceFacePage = () => {
       <ul className="face-list">
         {faces && faces.length > 0 ? (
           faces.map((f, idx) => {
-            // support both string and object shapes
-            const url = typeof f === 'string' ? f : f.url || f.faceUrl || f.image || '';
+            // normalize name and id
             const name = typeof f === 'string' ? '' : f.name || f.label || '';
-            const id = typeof f === 'string' ? f : f.id || f._id || url;
+            const id = typeof f === 'string' ? f : f.id || f._id || f.uid || null;
+
+            // normalize to array of urls
+            const extractUrls = (face) => {
+              if (!face) return [];
+              if (typeof face === 'string') return [face];
+              if (Array.isArray(face.imageURL) && face.imageURL.length) return face.imageURL;
+              if (Array.isArray(face.faceUrl) && face.faceUrl.length) return face.faceUrl;
+              if (Array.isArray(face.image) && face.image.length) return face.image;
+              if (Array.isArray(face.urls) && face.urls.length) return face.urls;
+              if (typeof face.imageURL === 'string' && face.imageURL) return [face.imageURL];
+              if (typeof face.faceUrl === 'string' && face.faceUrl) return [face.faceUrl];
+              if (typeof face.image === 'string' && face.image) return [face.image];
+              if (typeof face.url === 'string' && face.url) return [face.url];
+              if (typeof face.urls === 'string' && face.urls) return [face.urls];
+              return [];
+            };
+
+            const urls = extractUrls(f);
+
             return (
               <li key={idx} className="face-item">
-                <a href={url} target="_blank" rel="noreferrer">
-                  <img src={url} alt={`face-${idx}`} className="face-thumb" />
-                </a>
                 <div className="face-meta">
-                  <div className="face-name">{name || `Ảnh ${idx + 1}`}</div>
-                  <div className="face-url" hidden>{url}</div>
+                  <div className="face-name">{name || `Khuôn mặt ${idx + 1}`}</div>
                 </div>
-                <button className="btn-delete" onClick={() => handleDelete(id)}>Xóa</button>
+                <div className="face-group-images">
+                  {urls.length > 0 ? (
+                    urls.map((url, i) => (
+                      <a key={`${idx}-${i}`} href={url} target="_blank" rel="noreferrer">
+                        <img src={url} alt={`face-${idx}-${i}`} className="face-thumb" />
+                      </a>
+                    ))
+                  ) : (
+                    <div className="no-face-urls muted">Không có ảnh cho mục này</div>
+                  )}
+                </div>
+                <div className="face-actions">
+                  <button className="btn-delete" onClick={() => handleDelete(id || (urls[0] || ''))}>Xóa</button>
+                </div>
               </li>
             );
           })

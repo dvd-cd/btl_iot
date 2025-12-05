@@ -12,7 +12,7 @@ import { generateDeviceId, generateDeviceToken } from '../services/DeviceService
 const getAllDevices = async (req, res) => {
     try {
         const { id, role } = req.user;
-
+        console.log(`[deviceController.js] get all devices request by user ${id} with role ${role}`);
         // 
         let devices;
         if (role === "USER") {
@@ -20,7 +20,7 @@ const getAllDevices = async (req, res) => {
         } else {
             devices = await Device.find().populate('owner', '_id fullname role');
         }
-
+    
         devices = devices.map(device => ({
             id: device._id,
             deviceId: device.deviceId,
@@ -61,12 +61,14 @@ const getDevice = async (req, res) => {
     try {
         const { id } = req.user;
         const { deviceId } = req.params;
-
+        
+        console.log(deviceId);
         const device = await Device.findOne({
             deviceId: deviceId,
             owner: id
         }).populate('owner', '_id fullname role');
 
+        console.log("Object:", device);
         if (!device) return res.status(404).json({
             success: false,
             message: "Device not found"
