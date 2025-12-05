@@ -15,14 +15,14 @@ const faceApi = {
       const fd = new FormData();
       const arr = Array.isArray(filesOrFormData) ? filesOrFormData : [];
       arr.forEach((it) => {
-        if (it && it.file) fd.append('imageUrl', it.file);
+        if (it && it.file) fd.append("images", it.file);
       });
-
+      console.log("Appending images:", fd);
       // include single name for this batch if provided
       if (groupName !== undefined && groupName !== null) {
         fd.append('name', groupName);
       }
-      
+
       payload = fd;
       console.log("Prepared FormData for face registration:", fd);
     }

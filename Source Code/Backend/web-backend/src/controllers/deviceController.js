@@ -64,13 +64,13 @@ const getDevice = async (req, res) => {
         const { id } = req.user;
         const { deviceId } = req.params;
 
-        console.log(deviceId);
+        // console.log(deviceId);
         const device = await Device.findOne({
             deviceId: deviceId,
             owner: id
         }).populate('owner', '_id fullname role');
 
-        console.log("Object:", device);
+        // console.log("Object:", device);
         if (!device) return res.status(404).json({
             success: false,
             message: "Device not found"

@@ -34,11 +34,12 @@ def download_image_from_url(image_url):
     try:
         response = requests.get(image_url, timeout=10)
         response.raise_for_status()
-        image = Image.open(BytesIO(response.content)).convert('RGB')
+        image = Image.open(BytesIO(response.content)).convert("RGB")
         return np.array(image)
     except Exception as e:
         print(f"  ❌ Lỗi download ảnh từ {image_url}: {e}")
         return None
+
 
 # --- HÀM TRỢ GIÚP: TẠO VECTOR TỪ ẢNH ---
 
@@ -55,8 +56,7 @@ def create_face_vector(rgb_frame):
             return None
 
         # Tạo encoding
-        face_encodings = face_recognition.face_encodings(
-            rgb_frame, face_locations)
+        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
         if not face_encodings:
             return None
 
@@ -65,6 +65,7 @@ def create_face_vector(rgb_frame):
     except Exception as e:
         print(f"  ❌ Lỗi tạo vector: {e}")
         return None
+
 
 # --- HÀM CỐT LÕI: PROCESS REGISTRATION ---
 
@@ -82,7 +83,8 @@ def process_registration(user_id):
             return False, "No face features found"
 
         print(
-            f"Đang xử lý {len(face_features)} ảnh cho user {user.get('name', 'Unknown')}...")
+            f"Đang xử lý {len(face_features)} ảnh cho user {user.get('name', 'Unknown')}..."
+        )
 
         success_count = 0
 
@@ -93,8 +95,7 @@ def process_registration(user_id):
                 print(f"  [{idx+1}/{len(face_features)}] ❌ Không có imageURL")
                 continue
 
-            print(
-                f"  [{idx+1}/{len(face_features)}] Đang xử lý: {image_url[:50]}...")
+            print(f"  [{idx+1}/{len(face_features)}] Đang xử lý: {image_url[:50]}...")
 
             # Download ảnh
             rgb_frame = download_image_from_url(image_url)
@@ -113,13 +114,11 @@ def process_registration(user_id):
 
             # Update faceVector của object này
             users_col.update_one(
-                {"_id": ObjectId(user_id), "faceFeature.public_id": feature.get(
-                    "public_id")},
                 {
-                    "$set": {
-                        "faceFeature.$.faceVector": face_vector.tolist()
-                    }
-                }
+                    "_id": ObjectId(user_id),
+                    "faceFeature.public_id": feature.get("public_id"),
+                },
+                {"$set": {"faceFeature.$.faceVector": face_vector.tolist()}},
             )
 
             print(f"      ✅ Lưu vào DB thành công")
@@ -134,22 +133,24 @@ def process_registration(user_id):
         print(f"Lỗi: {e}")
         return False, str(e)
 
+
 # --- API ĐỂ WEB SERVER GỌI ---
-@app.route('/api/complete-registration', methods=['POST'])
+@app.route("/api/complete-registration", methods=["POST"])
 def complete_registration():
     data = request.json
-    user_id = data.get('user_id')
+    id = data.get("id")
 
-    if not user_id:
-        return jsonify({"error": "Missing user_id"}), 400
+    if not id:
+        return jsonify({"success": False, "message": "Missing faceBiometric_id"}), 400
 
-    success, msg = process_registration(user_id)
+    success, msg = process_registration(id)
 
     if success:
-        return jsonify({"status": "ok", "message": msg}), 200
+        return jsonify({"success": True, "message": msg}), 200
     else:
-        return jsonify({"status": "error", "message": msg}), 500
+        print(msg)
+        return jsonify({"success": False, "message": msg}), 500
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(port=5000, debug=True)

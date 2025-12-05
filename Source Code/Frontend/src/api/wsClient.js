@@ -41,7 +41,7 @@ const connect = (wsUrl) => {
 
 const disconnect = () => {
   if (socket) {
-    try { socket.close(); } catch (e) {console.log(e);}
+    try { socket.close(); } catch (e) { console.log(e); }
   }
   socket = null;
   listeners.clear();

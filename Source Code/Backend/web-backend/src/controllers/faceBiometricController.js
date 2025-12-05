@@ -1,7 +1,33 @@
 import Device from "../models/Device.js";
 import FaceBiometric from "../models/FaceBiometric.js";
 import uploadCloud from '../middlewares/upload.js'
+const AI_SERVER_URL = "http://localhost:5000";
 
+
+// call ai server
+const completeFaceRegistration = async (faceId) => {
+    try {
+        const response = await fetch(
+            `${AI_SERVER_URL}/api/complete-registration`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: faceId }),
+                timeout: 60000
+            }
+        );
+
+        const data = await response.json();
+        console.log('[AI Server] Registration completed:', data);
+        return data;
+
+    } catch (error) {
+        console.error('[AI Server] Error:', error.message);
+        return { success: false, message: error.message };
+    }
+}
 /**
  * add new face to device
  * /api/devices/:deviceId/faces/new
@@ -10,7 +36,9 @@ const addFace = async (req, res) => {
     try {
         const { deviceId } = req.params;
         const { id } = req.user;
+        console.log("body", req.body);
         const { name } = req.body;
+
 
         const device = await Device.find({ deviceId: deviceId, owner: id });
         if (!device) {
@@ -32,9 +60,15 @@ const addFace = async (req, res) => {
             deviceId: deviceId,
             faceFeature: faceFeature
         });
-
+        const savedFace = await face.save();
         // call AI server
-
+        const aiResult = await completeFaceRegistration(savedFace._id.toString());
+        // if (!aiResult.success) {
+        //     return res.status(401).json({
+        //         success: false,
+        //         message: aiResult.message
+        //     })
+        // }
         res.status(200).json({
             success: true,
             data: {
