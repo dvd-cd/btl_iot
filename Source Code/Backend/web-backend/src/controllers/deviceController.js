@@ -20,7 +20,7 @@ const getAllDevices = async (req, res) => {
         } else {
             devices = await Device.find().populate('owner', '_id fullname role');
         }
-    
+
         devices = devices.map(device => ({
             id: device._id,
             deviceId: device.deviceId,
@@ -61,7 +61,7 @@ const getDevice = async (req, res) => {
     try {
         const { id } = req.user;
         const { deviceId } = req.params;
-        
+
         console.log(deviceId);
         const device = await Device.findOne({
             deviceId: deviceId,
@@ -207,8 +207,8 @@ const updateDevice = async (req, res) => {
 const deleteDevice = async (req, res) => {
     try {
         const { id, role } = req.user;
+        console.log(req.params);
         const { deviceId } = req.params;
-
         let deleted;
         if (role === "ADMIN") {
             deleted = await Device.findByIdAndDelete(deviceId);

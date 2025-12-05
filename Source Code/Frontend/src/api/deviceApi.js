@@ -7,13 +7,14 @@ const deviceApi = {
   // updateDeviceByAdmin: (id, data) => {
   //   return apiClient.put(`/api/devices/${id}`, data);
   // },
-  deleteDeviceByAdmin: (id) => {
-    return apiClient.delete(`/api/devices/${id}`);
+  deleteDeviceByAdmin: (deviceId) => {
+    return apiClient.delete(`/api/devices/${deviceId}`);
   },
 
   // User
   getMyDevices: () => {
-    return apiClient.get("/api/devices")},
+    return apiClient.get("/api/devices")
+  },
   createDevice: (data) => apiClient.post("/api/devices/new", data),
   // getDeviceDetail: return device summary including faces (mock implementation)
   getDeviceDetail: (id) => {

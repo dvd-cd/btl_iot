@@ -10,7 +10,7 @@ const AdminDeviceListPage = () => {
 
   const load = () => {
     deviceApi.getAllDevices().then((res) => setDevices(res.data.data.devices));
-    
+
   };
 
 
@@ -25,7 +25,7 @@ const AdminDeviceListPage = () => {
     const newVersion = window.prompt("Nhập phiên bản mới:", device.version || "");
     if (!newVersion) return;
     try {
-      await deviceApi.updateDeviceByAdmin(device._id, { version: newVersion });
+      await deviceApi.updateDeviceByAdmin(device.id, { version: newVersion });
       load();
     } catch (err) {
       console.error("Update version failed", err);
@@ -34,7 +34,8 @@ const AdminDeviceListPage = () => {
   };
 
   const handleDeleteClick = (device) => {
-    setConfirm({ isOpen: true, deviceId: device._id, deviceName: device.deviceName });
+    console.log("device", device);
+    setConfirm({ isOpen: true, deviceId: device.id, deviceName: device.displayName });
   };
 
   const handleConfirmDelete = async () => {
