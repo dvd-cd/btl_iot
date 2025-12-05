@@ -1,3 +1,4 @@
+import Device from '../models/Device.js';
 import User from '../models/User.js';
 import { hash, compare } from '../utils/bcrypt.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt.js';
@@ -114,6 +115,10 @@ const deleteUser = async (req, res) => {
             message: "User not found"
         });
 
+        await Device.deleteMany({
+            owner: deleted._id
+        });
+
         return res.status(200).json({
             success: true,
             data: {
@@ -133,7 +138,6 @@ const deleteUser = async (req, res) => {
         });
     }
 }
-
 
 export {
     register,

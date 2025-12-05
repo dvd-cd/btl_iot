@@ -55,11 +55,34 @@ const addFace = async (req, res) => {
  * add new face to device
  * /api/devices/:deviceId/faces/:faceId
  */
-// const deleteFace = async (req, res) => {
-//     const { faceId } = req.params;
-//     const { id } = req.user;
+const deleteFace = async (req, res) => {
+    try {
+        const { faceId } = req.params;
+        const { id } = req.user;
 
-    
-// }
+        const face = await FaceBiometric.findById(faceId);
+        const device = await Device.findOne({
+            deviceId: face.deviceId
+        }).populate('owner', '_id');
 
-export { addFace };
+        if (!device || device.owner._id.toString() !== id) return res.status(400).json({
+            success: false,
+            message: "Not allowed"
+        });
+
+        await FaceBiometric.findByIdAndDelete(faceId);
+
+        return res.status(200).json({
+            success: true
+        })
+    } catch (error) {
+        console.log(`[faceBiometricController.js] deleteFace() error: ${error.message}`);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+
+}
+
+export { addFace, deleteFace };
