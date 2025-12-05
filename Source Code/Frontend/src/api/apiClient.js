@@ -1,7 +1,7 @@
 // src/api/apiClient.js
 import axios from "axios";
 
-const BASE_URL = "https://api.your-iot-lock.com"; // sửa cho đúng
+const BASE_URL = "http://localhost:3000"; // sửa cho đúng
 
 const apiClient = axios.create({
   baseURL: BASE_URL,

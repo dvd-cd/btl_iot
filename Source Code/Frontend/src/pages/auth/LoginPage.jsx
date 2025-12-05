@@ -13,11 +13,13 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const res = await authApi.login(username, password);
-      const { accessToken, refreshToken, role } = res.data || {};
+      console.log("Login response:", res);
+      const { accessToken, refreshToken, user } = res.data.data || {};
+      const role = user.role;
       if (accessToken) localStorage.setItem("accessToken", accessToken);
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
       if (role) localStorage.setItem("role", role);
-      navigate(role === "admin" ? "/admin" : "/user");
+      navigate(role === "ADMIN" ? "/admin" : "/user");
     } catch (err) {
       console.error(err);
       setError("Sai tài khoản hoặc mật khẩu");

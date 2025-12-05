@@ -1,12 +1,13 @@
 // src/components/layout/UserLayout.jsx
 import React, { useEffect } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import "../../styles/UserLayout.css";
 import wsClient from "../../api/wsClient";
 import ToastProvider, { useToast } from "../common/ToastProvider";
 
 const InnerLayout = () => {
   const { addToast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -48,6 +49,20 @@ const InnerLayout = () => {
           <Link to="/user/profile">Thông tin cá nhân</Link>
           <Link to="/user/devices">Khóa của tôi</Link>
           <Link to="/user/notifications">Thông báo</Link>
+          <button
+            type="button"
+            className="btn-logout"
+            onClick={() => {
+              // clear tokens and role, navigate to login
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+              localStorage.removeItem('role');
+              addToast('Đã đăng xuất', { type: 'info' });
+              navigate('/login');
+            }}
+          >
+            Đăng xuất
+          </button>
         </nav>
       </aside>
       <main className="content">
