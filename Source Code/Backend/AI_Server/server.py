@@ -1,119 +1,155 @@
-from flask import Flask, request, jsonify
-from pymongo import MongoClient
-from bson.objectid import ObjectId  # Để xử lý _id của Mongo
-import face_recognition
 import os
 import numpy as np
+import face_recognition
+from flask import Flask, request, jsonify
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 from dotenv import load_dotenv
+from io import BytesIO
+from PIL import Image
+import requests
 
+# 1. Load biến môi trường
 load_dotenv()
+MONGO_URI = os.getenv("MONGODB_URI")
+
+# 2. Kết nối MongoDB
+client = MongoClient(MONGO_URI)
+db = client["smartlock"]
+users_col = db["facebiometrics"]
+
+# 3. Khởi tạo AI
+print("--- Đang tải Model AI (face_recognition)... ---")
+print("--- AI Sẵn sàng ---")
 
 app = Flask(__name__)
 
-# 1. KẾT NỐI MONGODB
-uri = os.getenv("MONGODB_URI")
-try:
-    client = MongoClient(uri)
-    client.admin.command('ping')  # Test kết nối
-    print("✅ Đã kết nối thành công đến MongoDB Cloud!")
-except Exception as e:
-    print(f"❌ Kết nối thất bại: {e}")
-    exit()
-db = client["SmartLockDB"]
-users_collection = db["users"]
-
-print("✅ Đã kết nối đến MongoDB")
-
-# 2. API ĐỂ "TRAIN" (MÃ HÓA) NGƯỜI DÙNG MỚI
-# Web Server sẽ gọi vào đây sau khi upload ảnh xong
+# --- HÀM TRỢ GIÚP: DOWNLOAD ẢNH TỪ URL ---
 
 
-@app.route('/train_user', methods=['POST'])
-def train_user():
+def download_image_from_url(image_url):
+    """
+    Download ảnh từ URL và trả về numpy array (RGB)
+    """
     try:
-        # Lấy user_id từ request của Web Server
-        data = request.json
-        user_id_str = data.get('user_id')
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        image = Image.open(BytesIO(response.content)).convert('RGB')
+        return np.array(image)
+    except Exception as e:
+        print(f"  ❌ Lỗi download ảnh từ {image_url}: {e}")
+        return None
 
-        if not user_id_str:
-            return jsonify({"status": "error", "message": "Thiếu user_id"}), 400
+# --- HÀM TRỢ GIÚP: TẠO VECTOR TỪ ẢNH ---
 
-        print(f"🔄 Bắt đầu xử lý cho User ID: {user_id_str}")
 
-        # Tìm user trong MongoDB
-        # Lưu ý: ObjectId phải import từ bson
-        user = users_collection.find_one({"_id": ObjectId(user_id_str)})
+def create_face_vector(rgb_frame):
+    """
+    Tạo face vector (128 chiều) từ ảnh
+    Return: vector nếu thành công, None nếu thất bại
+    """
+    try:
+        # Nhận diện khuôn mặt
+        face_locations = face_recognition.face_locations(rgb_frame)
+        if not face_locations:
+            return None
 
-        if not user:
-            return jsonify({"status": "error", "message": "Không tìm thấy User trong DB"}), 404
+        # Tạo encoding
+        face_encodings = face_recognition.face_encodings(
+            rgb_frame, face_locations)
+        if not face_encodings:
+            return None
 
-        # Lấy danh sách đường dẫn ảnh từ DB
-        # Giả sử DB lưu: "images": ["uploads/pic1.jpg", "uploads/pic2.jpg"]
-        image_paths = user.get('images', [])
-
-        if not image_paths:
-            return jsonify({"status": "error", "message": "User này chưa có ảnh nào"}), 400
-
-        face_vectors = []  # Mảng chứa các vector kết quả
-
-        # --- BẮT ĐẦU VÒNG LẶP XỬ LÝ ẢNH ---
-        count_success = 0
-
-        for img_path in image_paths:
-            # Kiểm tra file có tồn tại không
-            if not os.path.exists(img_path):
-                print(f"⚠️ Ảnh không tồn tại: {img_path}")
-                continue
-
-            try:
-                # 1. Load ảnh
-                image = face_recognition.load_image_file(img_path)
-
-                # 2. Tìm và Mã hóa (Chỉ lấy khuôn mặt đầu tiên tìm thấy)
-                # Dùng model="hog" cho nhanh, hoặc "cnn" cho chính xác
-                encodings = face_recognition.face_encodings(image)
-
-                if len(encodings) > 0:
-                    # Lấy vector đầu tiên
-                    vector = encodings[0]
-
-                    # Chuyển numpy array thành list chuẩn của Python để lưu vào Mongo
-                    vector_list = vector.tolist()
-
-                    face_vectors.append(vector_list)
-                    count_success += 1
-                    print(f"✅ Đã mã hóa xong: {img_path}")
-                else:
-                    print(f"⚠️ Không tìm thấy mặt trong ảnh: {img_path}")
-
-            except Exception as e:
-                print(f"❌ Lỗi khi xử lý ảnh {img_path}: {e}")
-
-        # --- KẾT THÚC VÒNG LẶP ---
-
-        if count_success == 0:
-            return jsonify({"status": "error", "message": "Không trích xuất được vector nào từ ảnh đã gửi"}), 400
-
-        # 3. UPDATE MONGODB
-        # Lưu mảng face_vectors vào lại document của user đó
-        users_collection.update_one(
-            {"_id": ObjectId(user_id_str)},
-            {"$set": {"face_vectors": face_vectors, "is_trained": True}}
-        )
-
-        print(f"🎉 Hoàn tất! Đã lưu {count_success} vector vào DB.")
-
-        return jsonify({
-            "status": "success",
-            "message": f"Đã training xong {count_success} ảnh",
-            "vectors_count": count_success
-        }), 200
+        return face_encodings[0]  # Lấy face đầu tiên (128 chiều)
 
     except Exception as e:
-        print(f"❌ Lỗi Server: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        print(f"  ❌ Lỗi tạo vector: {e}")
+        return None
+
+# --- HÀM CỐT LÕI: PROCESS REGISTRATION ---
 
 
-# Chạy Server
+def process_registration(user_id):
+    try:
+        # Tìm user theo ID
+        user = users_col.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return False, "User not found"
+
+        # Lấy danh sách faceFeature
+        face_features = user.get("faceFeature", [])
+        if not face_features:
+            return False, "No face features found"
+
+        print(
+            f"Đang xử lý {len(face_features)} ảnh cho user {user.get('name', 'Unknown')}...")
+
+        success_count = 0
+
+        # Xử lý từng ảnh trong faceFeature
+        for idx, feature in enumerate(face_features):
+            image_url = feature.get("imageURL")
+            if not image_url:
+                print(f"  [{idx+1}/{len(face_features)}] ❌ Không có imageURL")
+                continue
+
+            print(
+                f"  [{idx+1}/{len(face_features)}] Đang xử lý: {image_url[:50]}...")
+
+            # Download ảnh
+            rgb_frame = download_image_from_url(image_url)
+            if rgb_frame is None:
+                continue
+
+            print(f"      ✅ Download ảnh thành công")
+
+            # Tạo face vector
+            face_vector = create_face_vector(rgb_frame)
+            if face_vector is None:
+                print(f"      ❌ Không thể tạo vector (không phát hiện khuôn mặt?)")
+                continue
+
+            print(f"      ✅ Tạo vector thành công")
+
+            # Update faceVector của object này
+            users_col.update_one(
+                {"_id": ObjectId(user_id), "faceFeature.public_id": feature.get(
+                    "public_id")},
+                {
+                    "$set": {
+                        "faceFeature.$.faceVector": face_vector.tolist()
+                    }
+                }
+            )
+
+            print(f"      ✅ Lưu vào DB thành công")
+            success_count += 1
+
+        if success_count == 0:
+            return False, f"Không thể tạo vector cho bất kỳ ảnh nào"
+
+        return True, f"Hoàn tất: {success_count}/{len(face_features)} ảnh được xử lý"
+
+    except Exception as e:
+        print(f"Lỗi: {e}")
+        return False, str(e)
+
+# --- API ĐỂ WEB SERVER GỌI ---
+@app.route('/api/complete-registration', methods=['POST'])
+def complete_registration():
+    data = request.json
+    user_id = data.get('user_id')
+
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+
+    success, msg = process_registration(user_id)
+
+    if success:
+        return jsonify({"status": "ok", "message": msg}), 200
+    else:
+        return jsonify({"status": "error", "message": msg}), 500
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(port=5000, debug=True)
