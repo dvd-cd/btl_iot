@@ -13,7 +13,6 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const res = await authApi.login(username, password);
-<<<<<<< Updated upstream:Source Code/Frontend/src/pages/auth/LoginPage.jsx
       console.log("Login response:", res);
       const { accessToken, refreshToken, user } = res.data.data || {};
       const role = user.role;
@@ -21,14 +20,6 @@ const LoginPage = () => {
       if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
       if (role) localStorage.setItem("role", role);
       navigate(role === "ADMIN" ? "/admin" : "/user");
-=======
-      const { accessToken, refreshToken, user } = res.data || {};
-      if (accessToken) localStorage.setItem("accessToken", accessToken);
-      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-      user = JSON.stringify(user);
-      if (user) localStorage.setItem("user", user);
-      navigate(user.role === "ADMIN" ? "/admin" : "/user");
->>>>>>> Stashed changes:Source Code/FE/src/pages/auth/LoginPage.jsx
     } catch (err) {
       console.error(err);
       setError("Sai tài khoản hoặc mật khẩu");
