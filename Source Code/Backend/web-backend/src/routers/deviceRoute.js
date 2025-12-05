@@ -20,9 +20,12 @@ router.delete('/:deviceId', deleteDevice);
 
 // biometrics
 router.post('/:deviceId/faces/new', uploadCloud.array('images'), addFace);
-// router.delete('/:deviceId/faces/:faceId');
+router.delete('/:deviceId/faces/:faceId', deleteFace);
+
+// click open/close door
+router.post('/:deviceId/commands', doorAction);
 
 // logs
-// router.get('/:deviceId/access-log')
+router.get('/:deviceId/access-logs', getAccessLogs);
 
 export default router;
