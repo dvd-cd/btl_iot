@@ -4,7 +4,7 @@ import apiClient from "./apiClient";
 const authApi = {
   login: (username, password) =>
     apiClient.post("/api/auth/login", { username, password }),
-  getMe: () => apiClient.get("/auth/me"),
+  getMe: () => apiClient.get("/api/auth/me"),
   updateProfile: (data) => apiClient.put("/api/auth/me", data),
 };
 

@@ -13,7 +13,8 @@ const UserProfilePage = () => {
   useEffect(() => {
     authApi.getMe().then((res) => {
       // initialize profile; password left empty for security
-      const data = res.data || {};
+      const data = res.data.data.user || {};
+      console.log("User profile data:", data);
       setProfile({ username: data.username || "", fullname: data.fullname || "", password: "" });
       setInitialFullname(data.fullname || "");
     });
@@ -36,6 +37,7 @@ const UserProfilePage = () => {
       // prepare payload (do not send empty password)
       const payload = { fullname: profile.fullname };
       if (profile.password) payload.password = profile.password;
+      console.log("Updating profile with payload:", payload);
       await authApi.updateProfile(payload);
       setMessage("Đã lưu thay đổi");
       setProfile((p) => ({ ...p, password: "" }));

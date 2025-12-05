@@ -15,7 +15,7 @@ const UserManagementPage = () => {
   });
 
   const loadUsers = () => {
-    userApi.getAllUsers().then((res) => setUsers(res.data));
+    userApi.getAllUsers().then((res) => setUsers(res.data.data.users));
   };
 
   useEffect(loadUsers, []);
@@ -40,13 +40,15 @@ const UserManagementPage = () => {
     });
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (userId) => {
     try {
-      await userApi.deleteUser(confirmDialog.userId);
+      console.log("Deleting user:", userId);
+      await userApi.deleteUser(encodeURIComponent(userId));
       setConfirmDialog({ isOpen: false, userId: null, username: "" });
       loadUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
+      // keep dialog closed on error as well
       setConfirmDialog({ isOpen: false, userId: null, username: "" });
     }
   };
@@ -84,7 +86,7 @@ const UserManagementPage = () => {
                   <div className="table-actions">
                     <button
                       className="btn-delete"
-                      onClick={() => handleDeleteClick(u._id, u.username)}
+                      onClick={() => handleDeleteClick(u.id, u.username)}
                     >
                       Xóa
                     </button>
@@ -106,7 +108,7 @@ const UserManagementPage = () => {
         isOpen={confirmDialog.isOpen}
         title="Xác nhận xóa"
         message={`Bạn có chắc muốn xóa tài khoản "${confirmDialog.username}" không?`}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => handleConfirmDelete(confirmDialog.userId)}
         onCancel={handleCancelDelete}
       />
     </div>
