@@ -54,17 +54,16 @@ const addFace = async (req, res) => {
 
 /**
  * add new face to device
- * /api/devices/:deviceId/faces/:faceId
+ * /api/devices/:deviceId/faces/:faceId/:imageURL
  */
 const deleteFace = async (req, res) => {
     try {
-        const { faceId } = req.params;
+        const { faceId, imageURL, deviceId } = req.params;
         const { id } = req.user;
         console.log("Deleting face with id:", faceId, "by user:", id);
 
-        const face = await FaceBiometric.findById(faceId);
         const device = await Device.findOne({
-            deviceId: face.deviceId
+            deviceId: deviceId
         }).populate('owner', '_id');
 
         console.log("Face found:", face);
@@ -75,7 +74,20 @@ const deleteFace = async (req, res) => {
             message: "Not allowed"
         });
 
-        await FaceBiometric.findByIdAndDelete(faceId);
+        const face = await FaceBiometric.findById(faceId);
+        if (!face) return res.status(404).json({
+            success: false,
+            message: "face not found"
+        });
+
+        const url = decodeURIComponent(imageURL).trim();
+        face.faceFeature = face.faceFeature.filter(feature => feature.imageURL !== url);
+
+        if (face.faceFeature.length === 0) {
+            await FaceBiometric.findByIdAndDelete(faceId);
+        } else {
+            await face.save();
+        }
 
         return res.status(200).json({
             success: true
