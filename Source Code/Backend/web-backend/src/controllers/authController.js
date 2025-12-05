@@ -155,9 +155,9 @@ const getUserInfo = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
     try {
-        const { fullname, currentPassword, newPassword, email } = req.body;
+        const { fullname, password } = req.body;
 
-        if (!fullname && !email && !currentPassword && !newPassword) {
+        if (!fullname && !password) {
             return res.status(400).json({
                 success: false,
                 message: "nothing to update"
@@ -177,31 +177,16 @@ const updateProfile = async (req, res) => {
         // check for update
         // fullname
         user.fullname = fullname || user.fullname;
-        // email
-        user.email = email || user.email;
         // password
-        if (newPassword) {
-            if (!currentPassword) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Current password is required',
-                });
-            }
-            if (newPassword === currentPassword) {
+        if (password) {
+            if (compare(password, user.password)) {
                 return res.status(400).json({
                     success: false,
                     message: 'New password must be different from current password',
                 });
             }
-            const isPasswordValid = await compare(currentPassword, user.password);
-            if (!isPasswordValid) {
-                return res.status(401).json({
-                    success: false,
-                    message: "Wrong password",
-                });
-            }
 
-            user.password = await hash(newPassword)
+            user.password = await hash(password)
         }
 
         await user.save();
@@ -214,7 +199,6 @@ const updateProfile = async (req, res) => {
                     username: user.username,
                     fullname: user.fullname,
                     role: user.role,
-                    email: user.email,
                 },
             }
         });

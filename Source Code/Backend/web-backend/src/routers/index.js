@@ -13,6 +13,6 @@ router.use('/auth', authRouter);
 // admin
 router.use('/admin', requireUser, requireAdmin, adminRoute);
 // device
-router.use('/device', deviceRouter);
+router.use('/devices', requireUser, deviceRouter);
 
 export default router;
