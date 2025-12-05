@@ -103,40 +103,15 @@ const DeviceDetailPage = () => {
             {faces && faces.length > 0 ? (
               // For each face entry, render all image URLs (some entries may contain an array)
               faces.map((f, idx) => {
-                const name = typeof f === 'string' ? '' : f.name || f.label || '';
-
-                // helper to normalize to array of urls
-                const extractUrls = (face) => {
-                  if (!face) return [];
-                  if (typeof face === 'string') return [face];
-                  // common fields that may hold one or more urls
-                  if (Array.isArray(face.imageURL) && face.imageURL.length > 0) return face.imageURL;
-                  if (Array.isArray(face.faceUrl) && face.faceUrl.length > 0) return face.faceUrl;
-                  if (Array.isArray(face.image) && face.image.length > 0) return face.image;
-                  // fallback to single string fields
-                  if (typeof face.imageURL === 'string' && face.imageURL) return [face.imageURL];
-                  if (typeof face.faceUrl === 'string' && face.faceUrl) return [face.faceUrl];
-                  if (typeof face.image === 'string' && face.image) return [face.image];
-                  if (typeof face.url === 'string' && face.url) return [face.url];
-                  return [];
-                };
-
-                const urls = extractUrls(f);
-
-                if (!urls || urls.length === 0) {
-                  return (
-                    <div key={idx} className="no-face-urls">
-                      <span className="muted">Không có ảnh cho mục này</span>
-                      <div className="face-name-hidden">{name}</div>
-                    </div>
-                  );
-                }
+                const name = f.name;
+                const urls = f.imageURL;
+                
+                console.log("Face entry:", urls.length, name);
 
                 return urls.map((url, i) => (
                   <a key={`${idx}-${i}`} href={url} target="_blank" rel="noreferrer">
-                    <img src={url} alt={`face-${idx}-${i}`} className="face-thumb" />
-                    {/* keep name available in DOM but hidden (only on first image of the face) */}
-                    {i === 0 && <div className="face-name-hidden">{name}</div>}
+                    <img src={url} className="face-thumb" />
+                    <div className="face-name-hidden">{name}</div>
                   </a>
                 ));
               })

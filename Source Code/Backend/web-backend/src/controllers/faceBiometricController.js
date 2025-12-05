@@ -19,12 +19,13 @@ const addFace = async (req, res) => {
                 message: "Device not found"
             })
         }
-
+        console.log("Uploaded files:", req.files);
         const faceFeature = req.files.map(file => ({
             imageURL: file.path,
             public_id: file.filename,
             faceVector: []
         }));
+
 
         const face = new FaceBiometric({
             name: name,

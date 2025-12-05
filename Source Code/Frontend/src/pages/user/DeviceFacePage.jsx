@@ -26,9 +26,7 @@ const DeviceFacePage = () => {
     if (!ok) return;
 
     try {
-      // pass array of { file } and single batchName to faceApi
       await faceApi.registerFace(deviceId, selectedFiles, batchName);
-      // after successful upload, navigate back to device list
       navigate("/user/devices");
     } catch (err) {
       console.error(err);
@@ -83,17 +81,9 @@ const DeviceFacePage = () => {
 
             // normalize to array of urls
             const extractUrls = (face) => {
-              if (!face) return [];
-              if (typeof face === 'string') return [face];
               if (Array.isArray(face.imageURL) && face.imageURL.length) return face.imageURL;
-              if (Array.isArray(face.faceUrl) && face.faceUrl.length) return face.faceUrl;
-              if (Array.isArray(face.image) && face.image.length) return face.image;
-              if (Array.isArray(face.urls) && face.urls.length) return face.urls;
               if (typeof face.imageURL === 'string' && face.imageURL) return [face.imageURL];
-              if (typeof face.faceUrl === 'string' && face.faceUrl) return [face.faceUrl];
-              if (typeof face.image === 'string' && face.image) return [face.image];
-              if (typeof face.url === 'string' && face.url) return [face.url];
-              if (typeof face.urls === 'string' && face.urls) return [face.urls];
+              
               return [];
             };
 
@@ -101,23 +91,24 @@ const DeviceFacePage = () => {
 
             return (
               <li key={idx} className="face-item">
-                <div className="face-meta">
-                  <div className="face-name">{name || `Khuôn mặt ${idx + 1}`}</div>
-                </div>
                 <div className="face-group-images">
                   {urls.length > 0 ? (
                     urls.map((url, i) => (
-                      <a key={`${idx}-${i}`} href={url} target="_blank" rel="noreferrer">
-                        <img src={url} alt={`face-${idx}-${i}`} className="face-thumb" />
-                      </a>
+                      <>
+                        <a key={`${idx}-${i}`} href={url} target="_blank" rel="noreferrer">
+                          <img src={url} alt={`face-${idx}-${i}`} className="face-thumb" />
+                          <div className="face-name">{name || `Khuôn mặt ${idx + 1}`}</div>
+                        </a>
+                        <div className="face-actions">
+                          <button className="btn-delete" onClick={() => handleDelete(id || (urls[0] || ''))}>Xóa</button>
+                        </div>
+                      </>
                     ))
                   ) : (
                     <div className="no-face-urls muted">Không có ảnh cho mục này</div>
                   )}
                 </div>
-                <div className="face-actions">
-                  <button className="btn-delete" onClick={() => handleDelete(id || (urls[0] || ''))}>Xóa</button>
-                </div>
+                
               </li>
             );
           })
