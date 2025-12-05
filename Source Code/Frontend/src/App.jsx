@@ -13,8 +13,6 @@ import AddDevicePage from "./pages/user/AddDevicePage";
 import DeviceDetailPage from "./pages/user/DeviceDetailPage";
 import DeviceLogsPage from "./pages/user/DeviceLogsPage";
 import DeviceFacePage from "./pages/user/DeviceFacePage";
-import UserNotificationsPage from "./pages/user/UserNotificationsPage";
-
 import UserManagementPage from "./pages/admin/UserManagementPage";
 import AdminDeviceListPage from "./pages/admin/AdminDeviceListPage";
 
@@ -50,7 +48,6 @@ const App = () => (
         <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
         <Route path="devices/:deviceId/logs" element={<DeviceLogsPage />} />
         <Route path="devices/:deviceId/faces" element={<DeviceFacePage />} />
-        <Route path="notifications" element={<UserNotificationsPage />} />
         <Route index element={<UserDeviceListPage />} />
       </Route>
 

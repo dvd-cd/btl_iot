@@ -42,6 +42,7 @@ apiClient.interceptors.response.use(
             return apiClient(originalRequest);
           }
         } catch (e) {
+          console.error("Token refresh failed:", e);
           // refresh failed -> clear tokens
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
