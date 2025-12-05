@@ -8,14 +8,12 @@ const DeviceFacePage = () => {
   const { deviceId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  // faces provided by navigation state from UserDeviceListPage
-  // faces may be an array of URL strings (old) or objects { id, url, name }
+  
   const navFaces = location?.state?.faces || [];
   const navDevice = location?.state?.device;
+  const id_faceBiometric = location?.state?.id;
   const faces = navFaces || [];
-  // selectedFiles: [{ file, previewUrl }]
   const [selectedFiles, setSelectedFiles] = useState([]);
-  // single batch name for all uploaded files
   const [batchName, setBatchName] = useState("");
 
   const handleUpload = async (e) => {
@@ -34,15 +32,19 @@ const DeviceFacePage = () => {
     }
   };
 
-  const handleDelete = async (faceId) => {
+  const handleDelete = async (url) => {
     const ok = window.confirm("Bạn có chắc muốn xóa ảnh khuôn mặt này?");
     if (!ok) return;
 
     try {
-      // encode faceId in case it's a URL or contains chars
-      const id = encodeURIComponent(faceId);
-      console.log("Deleting face with id:", faceId, "\t",id,"\turl", deviceId);
-      await faceApi.deleteFace(deviceId, id);
+      const encodedUrl = url ? encodeURIComponent(url) : "";
+      
+      const targetDeviceId =  deviceId;
+      const id = id_faceBiometric;
+      console.log("Deleting face -> deviceId:", targetDeviceId, "faceId:", id_faceBiometric, "url:", encodedUrl);
+      
+      await faceApi.deleteFace(targetDeviceId, id, encodedUrl);
+      
       // after successful delete, navigate back to device detail
       navigate(`/user/devices/${deviceId}`);
     } catch (err) {
@@ -96,15 +98,15 @@ const DeviceFacePage = () => {
                 <div className="face-group-images">
                   {urls.length > 0 ? (
                     urls.map((url, i) => (
-                      <>
-                        <a key={`${idx}-${i}`} href={url} target="_blank" rel="noreferrer">
+                      <div key={`${idx}-${i}`} className="face-image-with-actions">
+                        <a href={url} target="_blank" rel="noreferrer">
                           <img src={url} alt={`face-${idx}-${i}`} className="face-thumb" />
                           <div className="face-name">{name || `Khuôn mặt ${idx + 1}`}</div>
                         </a>
                         <div className="face-actions">
-                          <button className="btn-delete" onClick={() => handleDelete(deviceId, url)}>Xóa</button>
+                          <button className="btn-delete" onClick={() => handleDelete(url)}>Xóa</button>
                         </div>
-                      </>
+                      </div>
                     ))
                   ) : (
                     <div className="no-face-urls muted">Không có ảnh cho mục này</div>

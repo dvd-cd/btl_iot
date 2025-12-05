@@ -55,7 +55,12 @@ const faceApi = {
 
     return apiClient.post(`/api/devices/${deviceId}/faces/new`, payload);
   },
-  deleteFace: (deviceId, faceId) => apiClient.delete(`/api/devices/${deviceId}/faces/${faceId}`),
+  // deleteFace(deviceId, faceId, url)
+  // sends DELETE /api/devices/:deviceId/faces/:faceId?url=<encodedUrl>
+  deleteFace: (deviceId, faceId, url) => {
+    const q = encodeURIComponent(url);
+    return apiClient.delete(`/api/devices/${deviceId}/faces/${faceId}/${q}`);
+  },
 };
 
 export default faceApi;

@@ -67,7 +67,7 @@ const DeviceDetailPage = () => {
           </Link>
           <Link
             to={`/user/devices/${deviceId}/faces`}
-            state={{ device, faces: device.faces || [] }}
+            state={{ device, faces: device.faces || [], id: device.id }}
             className="btn-small btn-primary"
           >
             Quản lý khuôn mặt
