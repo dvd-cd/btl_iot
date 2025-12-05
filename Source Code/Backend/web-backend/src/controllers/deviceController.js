@@ -98,6 +98,7 @@ const getDevice = async (req, res) => {
                         role: device.owner.role
                     },
                     faces: faces.map(face => ({
+                        id_faceBiometric:face._id,
                         name: face.name,
                         imageURL: face.faceFeature.map(f => f.imageURL)
                     }))

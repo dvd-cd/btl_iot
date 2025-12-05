@@ -11,7 +11,6 @@ const DeviceFacePage = () => {
   
   const navFaces = location?.state?.faces || [];
   const navDevice = location?.state?.device;
-  const id_faceBiometric = location?.state?.id;
   const faces = navFaces || [];
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [batchName, setBatchName] = useState("");
@@ -32,7 +31,7 @@ const DeviceFacePage = () => {
     }
   };
 
-  const handleDelete = async (url) => {
+  const handleDelete = async (id_faceBiometric, url) => {
     const ok = window.confirm("Bạn có chắc muốn xóa ảnh khuôn mặt này?");
     if (!ok) return;
 
@@ -40,10 +39,8 @@ const DeviceFacePage = () => {
       const encodedUrl = url ? encodeURIComponent(url) : "";
       
       const targetDeviceId =  deviceId;
-      const id = id_faceBiometric;
-      console.log("Deleting face -> deviceId:", targetDeviceId, "faceId:", id_faceBiometric, "url:", encodedUrl);
-      
-      await faceApi.deleteFace(targetDeviceId, id, encodedUrl);
+
+      await faceApi.deleteFace(targetDeviceId, id_faceBiometric, encodedUrl);
       
       // after successful delete, navigate back to device detail
       navigate(`/user/devices/${deviceId}`);
@@ -81,8 +78,7 @@ const DeviceFacePage = () => {
             
             // normalize name and id
             const name = typeof f === 'string' ? '' : f.name || f.label || '';
-            const id = typeof f === 'string' ? f : f.id || f._id || f.uid || null;
-
+           
             // normalize to array of urls
             const extractUrls = (face) => {
               if (Array.isArray(face.imageURL) && face.imageURL.length) return face.imageURL;
@@ -96,7 +92,7 @@ const DeviceFacePage = () => {
             return (
               <li key={idx} className="face-item">
                 <div className="face-group-images">
-                  {urls.length > 0 ? (
+                  {
                     urls.map((url, i) => (
                       <div key={`${idx}-${i}`} className="face-image-with-actions">
                         <a href={url} target="_blank" rel="noreferrer">
@@ -104,13 +100,11 @@ const DeviceFacePage = () => {
                           <div className="face-name">{name || `Khuôn mặt ${idx + 1}`}</div>
                         </a>
                         <div className="face-actions">
-                          <button className="btn-delete" onClick={() => handleDelete(url)}>Xóa</button>
+                          <button className="btn-delete" onClick={() => handleDelete(f.id_faceBiometric, url)}>Xóa</button>
                         </div>
                       </div>
                     ))
-                  ) : (
-                    <div className="no-face-urls muted">Không có ảnh cho mục này</div>
-                  )}
+                  }
                 </div>
                 
               </li>
