@@ -6,14 +6,15 @@ const FaceBiometricSchema = new mongoose.Schema({
   deviceId: { type: String, required: true, ref: 'Device' },
 
   faceFeature: [{
+    _id: false,
     imageURL: { type: String },
+    public_id: { type: String },
     faceVector: {
       type: [Number],
       required: true
     }
   }]
 }, { timestamps: true });
-
 
 
 const FaceBiometric = mongoose.model('FaceBiometric', FaceBiometricSchema);
