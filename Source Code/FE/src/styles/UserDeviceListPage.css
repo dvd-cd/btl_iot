@@ -1,0 +1,50 @@
+/* UserDeviceListPage styles */
+
+.btn-unlock {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.btn-unlock:hover {
+  background: #229954;
+}
+
+.btn-unlock:active {
+  background: #1e8449;
+}
+
+.btn-lock {
+  background: #2980b9;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.btn-lock:hover {
+  background: #2471a3;
+}
+
+.btn-lock:active {
+  background: #1f618d;
+}
+
+.device-table .col-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  color: black
+}
+
+.col-status {
+    color: black;
+}

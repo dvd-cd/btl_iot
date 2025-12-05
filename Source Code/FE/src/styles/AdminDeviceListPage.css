@@ -1,0 +1,82 @@
+/* src/styles/AdminDeviceListPage.css */
+.admin-devices-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.admin-devices-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-devices-header h1 {
+  margin: 0;
+  color: #000;
+}
+
+.admin-device-table-wrapper {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.admin-device-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #000;
+}
+
+.admin-device-table thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.admin-device-table th,
+.admin-device-table td {
+  padding: 12px 16px;
+  text-align: left;
+  vertical-align: middle;
+  color: #000;
+  font-size: 14px;
+}
+
+.admin-device-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.admin-device-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-update {
+  padding: 6px 10px;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-update:hover { background-color: #138496; }
+
+.btn-delete {
+  padding: 6px 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-delete:hover { background-color: #c82333; }

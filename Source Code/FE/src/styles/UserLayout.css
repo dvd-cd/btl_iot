@@ -1,0 +1,204 @@
+/* UserLayout styles */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #fafafa;
+  width: 100vw; /* take full viewport width */
+  max-width: 100%;
+  margin: 0; /* override centered container */
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+.content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  min-width: 0; /* allow flex children to shrink properly */
+}
+
+/* Allow inner pages to use full width instead of being constrained */
+.content .device-list-container,
+.content .card,
+.content > * {
+  max-width: none;
+}
+/* Copied from src/components/layout/UserLayout.css */
+.sidebar {
+  /* size to content width (longest link) */
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
+  padding: 1.25rem 1rem;
+  background: linear-gradient(180deg, #ffffff, #f7f7f8);
+  border-right: 1px solid #eee;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  transition: padding 200ms ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.sidebar h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: #333;
+  display: block;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.sidebar nav a {
+  color: #444;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  display: block;
+  text-align: left;
+  white-space: nowrap; /* keep labels on one line */
+}
+
+.sidebar nav a:hover {
+  background: #f0f4ff;
+  color: #2f4df5;
+}
+/* Main content */
+.content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+}
+
+/* Header */
+.user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(90deg, #ffffff 0%, #fbfbfb 100%);
+  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.user-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-header .logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: 700;
+}
+
+.user-header .logo-link img {
+  height: 40px;
+  width: 10px;
+  object-fit: contain;
+}
+
+.user-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-header .search {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  min-width: 160px;
+}
+
+.user-header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-header .avatar {
+  width: 10px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ddd;
+}
+
+.user-header .user-name {
+  font-weight: 600;
+  color: #333;
+}
+
+@media (max-width: 808px) {
+  .sidebar {
+    display: none;
+  }
+
+  .user-header {
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .user-header .search {
+    display: none;
+  }
+}
+
+/* Compact (left) header variant */
+.user-header--compact {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 32px;
+  padding: 1rem 0.4rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  border-right: 1px solid #e6e6e6;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+}
+
+.user-header--compact .logo-link {
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-header--compact .logo-link img {
+  height: 40px;
+  width: 20px;
+}
+
+.user-header--compact .logo-link span {
+  display: none; /* hide text to keep it compact */
+}
+
+.user-header--compact .header-actions,
+.user-header--compact .search,
+.user-header--compact .user-name {
+  display: none;
+}
+
+/* When using compact header, push main layout to the right */
+.layout.with-compact-header {
+  margin-left: 72px;
+}
+
+@media (max-width: 900px) {
+  .user-header--compact {
+    display: none; /* hide compact header on small screens */
+  }
+  .layout.with-compact-header {
+    margin-left: 0;
+  }
+}

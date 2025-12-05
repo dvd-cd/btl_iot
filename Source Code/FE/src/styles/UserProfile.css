@@ -1,0 +1,98 @@
+/* Styles for UserProfilePage list layout */
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  max-width: 760px;
+  margin: 1.5rem auto;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-row .label {
+  width: 180px;
+  color: #444;
+  font-weight: 600;
+}
+
+.profile-row .value {
+  flex: 1;
+}
+
+.profile-row input {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  font-size: 1rem;
+}
+
+.masked-value {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  color: #888;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  letter-spacing: 2px;
+}
+
+.masked-value:hover {
+  background-color: #f9f9f9;
+  border-color: #e6e6e6;
+  color: #555;
+}
+
+.display-value {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.display-value:hover {
+  background-color: #f9f9f9;
+  border-color: #e6e6e6;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-error {
+  color: #c33;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .profile-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-row .label {
+    width: auto;
+    margin-bottom: 0.5rem;
+  }
+}

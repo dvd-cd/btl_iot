@@ -1,0 +1,89 @@
+/* Styles for DeviceFacePage */
+.device-face-container {
+  color: #000; /* ensure black text for readability */
+  max-width: 900px;
+  margin: 1.5rem auto;
+  background: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.device-face-container h1, .device-face-container h2 {
+  color: #000;
+}
+
+.device-name {
+  color: #000;
+  margin-bottom: 1rem;
+}
+
+.face-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.face-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.face-thumb {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.face-meta {
+  flex: 1;
+}
+
+.btn-delete {
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e04;
+  background: #fff;
+  color: #d00;
+  cursor: pointer;
+}
+
+.face-title {
+  color: #000;
+  font-weight: 600;
+}
+
+.face-url {
+  color: #333;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.no-faces {
+  color: #333;
+}
+
+.upload-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.upload-form input[type="file"] {
+  display: inline-block;
+}
+
+.upload-form button {
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #2f6bed;
+  background: #2f6bed;
+  color: #fff;
+  cursor: pointer;
+}

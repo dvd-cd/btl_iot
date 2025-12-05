@@ -1,0 +1,52 @@
+/* Styles specific to AddDevicePage - centers the form inside the add card */
+.add-device-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center children horizontally */
+  padding: 2.5rem;
+  box-sizing: border-box;
+  max-width: 760px; /* limit card width to match table */
+  margin: 2rem auto; /* center card inside the outer container */
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+.add-device-card .subtitle {
+  width: 100%;
+  max-width: 760px;
+  color: #666;
+  margin-bottom: 1.25rem;
+}
+
+.add-device-form {
+  width: 100%;
+  max-width: 760px; /* matches table width roughly */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .add-device-card {
+    padding: 1.5rem;
+  }
+  .add-device-form {
+    max-width: 100%;
+  }
+}
