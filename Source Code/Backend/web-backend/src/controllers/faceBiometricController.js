@@ -19,7 +19,7 @@ const addFace = async (req, res) => {
                 message: "Device not found"
             })
         }
-        console.log("Uploaded files:", req.files);
+
         const faceFeature = req.files.map(file => ({
             imageURL: file.path,
             public_id: file.filename,
@@ -64,7 +64,6 @@ const deleteFace = async (req, res) => {
             deviceId: deviceId
         }).populate('owner', '_id');
 
-     
         if (!device || device.owner._id.toString() !== id) return res.status(400).json({
             success: false,
             message: "Not allowed"

@@ -4,9 +4,23 @@ import { Link, useNavigate } from "react-router-dom";
 import deviceApi from "../../api/deviceApi";
 import "../../styles/UserDeviceListPage.css";
 
+import { authIO } from "../../api/socket";
+
 const UserDeviceListPage = () => {
   const [devices, setDevices] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    authIO.on("change-lock-state", (notice) => {
+      const deviceId = notice.deviceId;
+
+      setDevices((prev) =>
+        prev.map((d) =>
+          d.deviceId === deviceId ? { ...d, lockState: notice.lockState } : d
+        )
+      );
+    });
+  }, []);
 
   const loadDevices = () => {
     deviceApi.getMyDevices().then((res) => setDevices(res.data.data.devices));
@@ -22,8 +36,8 @@ const UserDeviceListPage = () => {
       // reload devices list (so status updated from backend is fetched)
       loadDevices();
     };
-    window.addEventListener('device-status-updated', handler);
-    return () => window.removeEventListener('device-status-updated', handler);
+    window.addEventListener("device-status-updated", handler);
+    return () => window.removeEventListener("device-status-updated", handler);
   }, []);
 
   // const getStatusBadge = (status) => {
@@ -70,40 +84,60 @@ const UserDeviceListPage = () => {
                 >
                   Xem chi tiết
                 </Link>
-                {device.lockState === "LOCKED" && device.status !== "NOT_ACTIVE" && (
-                  <button
-                    className="btn-unlock"
-                    onClick={async () => {
-                      try {
-                        await deviceApi.sendDeviceCommand(device._id, "unlock");
-                        setDevices((prev) => prev.map((d) => (d._id === device._id ? { ...d, status: "unlocked" } : d)));
-                        window.alert("Gửi lệnh mở khóa thành công");
-                      } catch (err) {
-                        console.error(err);
-                        window.alert("Không thể gửi lệnh mở khóa");
-                      }
-                    }}
-                  >
-                    Mở khóa
-                  </button>
-                )}
-                {device.lockState === "UNLOCKED" && device.status !== "NOT_ACTIVE" && (
-                  <button
-                    className="btn-lock"
-                    onClick={async () => {
-                      try {
-                        await deviceApi.sendDeviceCommand(device._id, "lock");
-                        setDevices((prev) => prev.map((d) => (d._id === device._id ? { ...d, status: "locked" } : d)));
-                        window.alert("Gửi lệnh đóng khóa thành công");
-                      } catch (err) {
-                        console.error(err);
-                        window.alert("Không thể gửi lệnh đóng khóa");
-                      }
-                    }}
-                  >
-                    Đóng khóa
-                  </button>
-                )}
+                {device.lockState === "LOCKED" &&
+                  device.status !== "NOT_ACTIVE" && (
+                    <button
+                      className="btn-unlock"
+                      onClick={async () => {
+                        try {
+                          await deviceApi.sendDeviceCommand(
+                            device.deviceId,
+                            "open"
+                          );
+                          setDevices((prev) =>
+                            prev.map((d) =>
+                              d.deviceId === device.deviceId
+                                ? { ...d, lockState: "UNLOCKED" }
+                                : d
+                            )
+                          );
+                          // window.alert("Gửi lệnh mở khóa thành công");
+                        } catch (err) {
+                          console.error(err);
+                          window.alert("Không thể gửi lệnh mở khóa");
+                        }
+                      }}
+                    >
+                      Mở khóa
+                    </button>
+                  )}
+                {device.lockState === "UNLOCKED" &&
+                  device.status !== "NOT_ACTIVE" && (
+                    <button
+                      className="btn-lock"
+                      onClick={async () => {
+                        try {
+                          await deviceApi.sendDeviceCommand(
+                            device.deviceId,
+                            "close"
+                          );
+                          setDevices((prev) =>
+                            prev.map((d) =>
+                              d.deviceId === device.deviceId
+                                ? { ...d, lockState: "LOCKED" }
+                                : d
+                            )
+                          );
+                          // window.alert("Gửi lệnh đóng khóa thành công");
+                        } catch (err) {
+                          console.error(err);
+                          window.alert("Không thể gửi lệnh đóng khóa");
+                        }
+                      }}
+                    >
+                      Đóng khóa
+                    </button>
+                  )}
               </div>
             </div>
           ))
