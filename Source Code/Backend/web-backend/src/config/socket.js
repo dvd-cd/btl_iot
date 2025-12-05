@@ -43,6 +43,7 @@ const init = (httpServer) => {
         console.log('[socket.js] New client connected to #authIO:', socket.id);
 
         const userId = socket.userId;
+        console.log(`client ${socket.id} join into room ${socket.userId}`)
         if (userId) socket.join(userId);
 
         socket.on('disconnect', () => {
@@ -77,13 +78,13 @@ const getAuthIO = () => {
     if (!authIO) {
         throw new Error("[socket.js] #authIO not initialized!");
     }
-    return io;
+    return authIO;
 }
 const getPublicIO = () => {
     if (!publicIO) {
         throw new Error("[socket.js] #publicIO not initialized!");
     }
-    return io;
+    return publicIO;
 }
 
 export { init, getAuthIO, getPublicIO };
