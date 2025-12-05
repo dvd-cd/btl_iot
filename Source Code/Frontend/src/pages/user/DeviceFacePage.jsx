@@ -41,6 +41,7 @@ const DeviceFacePage = () => {
     try {
       // encode faceId in case it's a URL or contains chars
       const id = encodeURIComponent(faceId);
+      console.log("Deleting face with id:", faceId, "\t",id,"\turl", deviceId);
       await faceApi.deleteFace(deviceId, id);
       // after successful delete, navigate back to device detail
       navigate(`/user/devices/${deviceId}`);
@@ -75,6 +76,7 @@ const DeviceFacePage = () => {
       <ul className="face-list">
         {faces && faces.length > 0 ? (
           faces.map((f, idx) => {
+            
             // normalize name and id
             const name = typeof f === 'string' ? '' : f.name || f.label || '';
             const id = typeof f === 'string' ? f : f.id || f._id || f.uid || null;
@@ -100,7 +102,7 @@ const DeviceFacePage = () => {
                           <div className="face-name">{name || `Khuôn mặt ${idx + 1}`}</div>
                         </a>
                         <div className="face-actions">
-                          <button className="btn-delete" onClick={() => handleDelete(id || (urls[0] || ''))}>Xóa</button>
+                          <button className="btn-delete" onClick={() => handleDelete(deviceId, url)}>Xóa</button>
                         </div>
                       </>
                     ))

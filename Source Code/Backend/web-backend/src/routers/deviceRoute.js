@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { addDevice, deleteDevice, getAllDevices, getDevice, updateDevice } from '../controllers/deviceController.js';
-import { addFace } from '../controllers/faceBiometricController.js';
+import { addDevice, deleteDevice, getAllDevices, getDevice, updateDevice, doorAction, getAccessLogs } from '../controllers/deviceController.js';
+import { addFace, deleteFace } from '../controllers/faceBiometricController.js';
 import { requireUser } from '../middlewares/auth.js'
 import uploadCloud from '../middlewares/upload.js';
 

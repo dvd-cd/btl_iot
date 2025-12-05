@@ -60,11 +60,15 @@ const deleteFace = async (req, res) => {
     try {
         const { faceId } = req.params;
         const { id } = req.user;
+        console.log("Deleting face with id:", faceId, "by user:", id);
 
         const face = await FaceBiometric.findById(faceId);
         const device = await Device.findOne({
             deviceId: face.deviceId
         }).populate('owner', '_id');
+
+        console.log("Face found:", face);
+        console.log("Associated device:", device);
 
         if (!device || device.owner._id.toString() !== id) return res.status(400).json({
             success: false,
