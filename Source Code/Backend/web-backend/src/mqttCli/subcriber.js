@@ -36,9 +36,11 @@ const subcribeBroker = () => {
                     device.lockState = lock_state.toUpperCase();
                     await device.save();
 
-                    authIO.to(device.owner._id).emit("change-lock-state", {
+                    // console
+                    // console.log(`send notice to client ${device.owner._id}, ${device.owner.fullname}`)
+                    authIO.to(device.owner._id.toString()).emit("change-lock-state", {
                         deviceId: device.deviceId,
-                        name: device.name,
+                        name: device.displayName,
                         status: device.status,
                         lockState: device.lockState,
                     })

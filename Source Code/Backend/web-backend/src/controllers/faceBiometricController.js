@@ -47,7 +47,7 @@ const addFace = async (req, res) => {
                 message: "Device not found"
             })
         }
-        console.log("Uploaded files:", req.files);
+
         const faceFeature = req.files.map(file => ({
             imageURL: file.path,
             public_id: file.filename,
@@ -94,14 +94,9 @@ const deleteFace = async (req, res) => {
     try {
         const { faceId, imageURL, deviceId } = req.params;
         const { id } = req.user;
-        console.log("Deleting face with id:", faceId, "by user:", id);
-
         const device = await Device.findOne({
             deviceId: deviceId
         }).populate('owner', '_id');
-
-        console.log("Face found:", face);
-        console.log("Associated device:", device);
 
         if (!device || device.owner._id.toString() !== id) return res.status(400).json({
             success: false,

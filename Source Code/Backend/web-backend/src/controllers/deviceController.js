@@ -98,6 +98,7 @@ const getDevice = async (req, res) => {
                         role: device.owner.role
                     },
                     faces: faces.map(face => ({
+                        id_faceBiometric:face._id,
                         name: face.name,
                         imageURL: face.faceFeature.map(f => f.imageURL)
                     }))
@@ -268,8 +269,10 @@ const doorAction = async (req, res) => {
         });
 
         const message = req.body;
+        console.log(message)
         message["token"] = device.deviceToken;
-        // console.log(message)
+        console.log(device.deviceId)
+        console.log(message)
 
         mqttClient.publish(`smartlock/${device.deviceId}/command`, JSON.stringify(message), { qos: 0 },
             async (error) => {
