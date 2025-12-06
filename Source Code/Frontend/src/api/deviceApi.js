@@ -24,7 +24,7 @@ const deviceApi = {
   updateMyDevice: (id, data) =>
     apiClient.put(`/api/devices/${id}`, data),
   getDeviceLogs: (id, params) =>
-    apiClient.get(`/api/devices/${id}/logs`, { params }),
+    apiClient.get(`/api/devices/${id}/access-logs`, { params }),
   // send a command to device (e.g., lock/unlock)
   sendDeviceCommand: (id, action) =>
     // action: 'unlock' | 'lock'

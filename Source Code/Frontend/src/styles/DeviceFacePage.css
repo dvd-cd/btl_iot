@@ -31,6 +31,24 @@
   margin-bottom: 12px;
 }
 
+/* Ensure group of images are rendered in a single horizontal row */
+.face-group-images {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: nowrap; /* prevent wrapping to next line */
+  overflow-x: auto; /* allow scrolling if too many images */
+  padding: 6px 0;
+}
+
+.face-image-with-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .face-thumb {
   width: 96px;
   height: 96px;
