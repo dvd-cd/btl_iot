@@ -31,8 +31,8 @@ const DeviceLogsPage = () => {
               <td>{new Date(l.timestamp).toLocaleString()}</td>
               <td>{l.actionType}</td>
               <td>{l.status}</td>
-              <td>{l.detectedName}</td>
-              <td><img src={l.snapshotURL}></img></td>
+              <td>{l.detectedFace ? l.detectedFace.name : ""}</td>
+              <td><img src={l.snapshotURL} style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "6px" }} alt="snapshot" /></td>
             </tr>
           ))}
         </tbody>
